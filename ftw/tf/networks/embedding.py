@@ -86,7 +86,6 @@ class OAREmbedding(snt.Module):
         Returns:
             embedding: concatenation of observation, action and reward embeddings.
         """
-
         # Add dummy trailing dimension to rewards if necessary.
         if len(inputs.reward.shape.dims) == 1:
             inputs = inputs._replace(reward=tf.expand_dims(inputs.reward, axis=-1))
@@ -96,14 +95,26 @@ class OAREmbedding(snt.Module):
             action = tf.one_hot(inputs.action, depth=self._num_actions)  # [T?, B, A]
         else:  # decomposed action space
             # create one-hot arrays per action group and concatenate the results to a tf.Tensor
+            """
             action = tf.concat(
                 [tf.one_hot(action, depth=self._num_actions[i]) for i, action in enumerate(inputs.action)],
                 axis=-1)
+            """
+            action = tf.concat(
+                    [tf.one_hot((0,), depth=7), # steer
+                     tf.one_hot((1,), depth=5), # accel
+                     tf.one_hot((2,), depth=2), # brake
+                     tf.one_hot((3,), depth=2), # nitro
+                     tf.one_hot((4,), depth=2), # rescue
+                     tf.one_hot((5,), depth=2)], axis=-1) # skid
+
         reward = inputs.reward
         if self._internal_rewards is not None:
             # If using internal_rewards, reward is dot product between internal_rewards and rewards/events
             reward = self._internal_rewards.reward(events=reward)
         reward = tf.nn.tanh(reward)  # [T?, B, 1]
+        # FIXME: This might not make sense
+        reward = tf.expand_dims(reward, axis=0)
 
         embedding = tf.concat([features, action, reward], axis=-1)  # [T?, B, D+A+1]
 

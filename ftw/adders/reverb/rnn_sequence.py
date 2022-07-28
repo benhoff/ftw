@@ -67,10 +67,11 @@ class NonOverlappingRNNSequenceAdder(base.ReverbAdder):
         """
         super().__init__(
             client=client,
-            buffer_size=sequence_length,
+            # buffer_size=sequence_length,
             max_sequence_length=sequence_length,
             delta_encoded=delta_encoded,
-            chunk_length=chunk_length,
+            max_in_flight_items=1,
+            # chunk_length=chunk_length,
             priority_fns=priority_fns)
 
         self._step = 0

@@ -1,17 +1,19 @@
 numpy<1.19.0, >=1.16.0
-dm-acme==0.1.8
-dm-reverb-nightly==0.1.0.dev20200708
-tf-nightly==2.4.0.dev20200708
-tfp-nightly==0.12.0.dev20200717
+dm-acme
+dm-reverb
+tf
+# tfp-nightly
+tensorflow-probability
 dm-sonnet
 trfl
 jax
 jaxlib
 dm-haiku
 optax
-rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax
+# rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax
+# rlax @ git+git://github.com/deepmind/rlax.git
 dataclasses
-bsuite @ git+git://github.com/deepmind/bsuite.git#egg=bsuite
+# bsuite @ git+git://github.com/deepmind/bsuite.git#egg=bsuite
 dm-control
 gym
 gym[atari]

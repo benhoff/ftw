@@ -10,20 +10,19 @@ from setuptools import find_packages
 from setuptools import setup
 
 reverb_requirements = [
-    'dm-reverb-nightly==0.1.0.dev20200708',
-    'tf-nightly==2.4.0.dev20200708',
+    'dm-reverb',
 ]
 
 tf_requirements = [
-    'tf-nightly==2.4.0.dev20200708',
-    'tfp-nightly==0.12.0.dev20200717',
+    'tensorflow',
+    #'tensorflow-probability',
     'dm-sonnet',
     'trfl',
 ]
 
 jax_requirements = [
     'jax',
-    'jaxlib',
+    #'jaxlib',
     'dm-haiku',
     'optax',
     'rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax',
@@ -67,9 +66,10 @@ setup(
         'absl-py',
         'dm_env',
         'dm-tree',
-        'numpy<1.19.0, >=1.16.0',
+        # 'numpy<1.19.0, >=1.16.0',
+        'numpy',
         'pillow',
-        'dm-acme==0.1.8'
+        'dm-acme',
     ] + reverb_requirements + tf_requirements + jax_requirements + env_requirements,
     classifiers=[
         'Development Status :: 3 - Alpha',

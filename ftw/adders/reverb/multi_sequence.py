@@ -118,10 +118,11 @@ class MultiSequenceAdder(base.ReverbAdder):
 
         super().__init__(
             client=client,
-            buffer_size=self._max_sequence_length,
+            # buffer_size=self._max_sequence_length,
             max_sequence_length=self._max_sequence_length,
             delta_encoded=delta_encoded,
-            chunk_length=chunk_length,
+            # chunk_length=chunk_length,
+            max_in_flight_items=1,
             priority_fns=priority_fns)
 
         self._sequence_lengths = sequence_lengths
