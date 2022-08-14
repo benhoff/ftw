@@ -136,7 +136,7 @@ def make_reverb_fifo_sampler_dataset(
                 sequence_length=sequence_length,
                 convert_zero_size_to_none=convert_zero_size_to_none,
                 using_deprecated_adder=using_deprecated_adder)
-            dataset_ = reverb.ReplayDataset(
+            dataset_ = reverb.TrajectoryDataset(
                 server_address=server_address,
                 table=table,
                 dtypes=dtypes,
@@ -146,7 +146,7 @@ def make_reverb_fifo_sampler_dataset(
                 sequence_length=sequence_length,
                 emit_timesteps=sequence_length is None)
         else:
-            dataset_ = reverb.ReplayDataset.from_table_signature(
+            dataset_ = reverb.TrajectoryDataset.from_table_signature(
                 server_address=server_address,
                 table=table,
                 max_in_flight_samples_per_worker=max_in_flight_samples_per_worker,
@@ -255,7 +255,7 @@ def make_reverb_rnn_sequence_fifo_sampler_dataset(
                 shapes[-1].update(core_state=tree.map_structure(
                     lambda x: tf.TensorShape([1, *x.shape]),
                     extra_spec['core_state']))
-            dataset_ = reverb.ReplayDataset(
+            dataset_ = reverb.TrajectoryDataset(
                 server_address=server_address,
                 table=table,
                 dtypes=dtypes,
@@ -265,7 +265,7 @@ def make_reverb_rnn_sequence_fifo_sampler_dataset(
                 sequence_length=None,
                 emit_timesteps=True)
         else:
-            dataset_ = reverb.ReplayDataset.from_table_signature(
+            dataset_ = reverb.TrajectoryDataset.from_table_signature(
                 server_address=server_address,
                 table=table,
                 max_in_flight_samples_per_worker=max_in_flight_samples_per_worker,
