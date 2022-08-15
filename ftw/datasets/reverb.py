@@ -45,10 +45,6 @@ Edits made to the original script:
         argument to both functions implemented by this module, and setting its
         default value to True. Setting this to False may improve performance
         at the cost of determinism.
-    -   Passing sequence_length=None and emit_timesteps=True to the construction
-        of the ReplayDataset in make_reverb_rnn_sequence_fifo_sampler_dataset(),
-        as well as manipulating the shape of core_state spec, so sequences
-        contain only the first core_state of a sequence.
 """
 
 from typing import Optional
@@ -68,7 +64,6 @@ def make_reverb_fifo_sampler_dataset(
         environment_spec: Optional[specs.EnvironmentSpec] = None,
         batch_size: Optional[int] = None,
         prefetch_size: Optional[int] = None,
-        sequence_length: Optional[int] = None,
         extra_spec: Optional[types.NestedSpec] = None,
         transition_adder: bool = False,
         table: str = adders.DEFAULT_PRIORITY_TABLE,
@@ -99,8 +94,6 @@ def make_reverb_fifo_sampler_dataset(
         the cycle_length for `tf.data.Dataset.interleave` -- if unspecified the
         cycle length is set to `tf.data.experimental.AUTOTUNE`.
       prefetch_size: How many batches to prefectch in the pipeline.
-      sequence_length: Optional. If specified consecutive elements of each
-        interleaved dataset will be combined into sequences.
       extra_spec: Optional. A possibly nested structure of specs for extras. Note
         that whether or not this is present changes the format of the data.
       transition_adder: Optional, defaults to False; whether the adder used with
@@ -133,7 +126,6 @@ def make_reverb_fifo_sampler_dataset(
                 transition_adder,
                 environment_spec,
                 extra_spec=extra_spec,
-                sequence_length=sequence_length,
                 convert_zero_size_to_none=convert_zero_size_to_none,
                 using_deprecated_adder=using_deprecated_adder)
             dataset_ = reverb.TrajectoryDataset(
@@ -142,18 +134,13 @@ def make_reverb_fifo_sampler_dataset(
                 dtypes=dtypes,
                 shapes=shapes,
                 max_in_flight_samples_per_worker=max_in_flight_samples_per_worker,
-                num_workers_per_iterator=1,
-                sequence_length=sequence_length,
-                emit_timesteps=sequence_length is None)
+                num_workers_per_iterator=1)
         else:
             dataset_ = reverb.TrajectoryDataset.from_table_signature(
                 server_address=server_address,
                 table=table,
                 max_in_flight_samples_per_worker=max_in_flight_samples_per_worker,
-                num_workers_per_iterator=1,
-                # ensures compatability with agents using a queue
-                sequence_length=sequence_length,
-                emit_timesteps=sequence_length is None)
+                num_workers_per_iterator=1)
         # Finish the pipeline: batch and prefetch.
         if batch_size:
             dataset_ = dataset_.batch(batch_size, drop_remainder=True)
@@ -179,7 +166,6 @@ def make_reverb_rnn_sequence_fifo_sampler_dataset(
         environment_spec: Optional[specs.EnvironmentSpec] = None,
         batch_size: Optional[int] = None,
         prefetch_size: Optional[int] = None,
-        sequence_length: Optional[int] = None,
         extra_spec: Optional[types.NestedSpec] = None,
         transition_adder: bool = False,
         table: str = adders.DEFAULT_PRIORITY_TABLE,
@@ -212,8 +198,6 @@ def make_reverb_rnn_sequence_fifo_sampler_dataset(
         the cycle_length for `tf.data.Dataset.interleave` -- if unspecified the
         cycle length is set to `tf.data.experimental.AUTOTUNE`.
       prefetch_size: How many batches to prefectch in the pipeline.
-      sequence_length: Optional. If specified consecutive elements of each
-        interleaved dataset will be combined into sequences.
       extra_spec: Optional. A possibly nested structure of specs for extras. Note
         that whether or not this is present changes the format of the data.
       transition_adder: Optional, defaults to False; whether the adder used with
@@ -246,10 +230,9 @@ def make_reverb_rnn_sequence_fifo_sampler_dataset(
                 transition_adder,
                 environment_spec,
                 extra_spec=extra_spec,
-                sequence_length=sequence_length,
                 convert_zero_size_to_none=convert_zero_size_to_none,
                 using_deprecated_adder=using_deprecated_adder)
-            if sequence_length and 'core_state' in shapes[-1]:
+            if 'core_state' in shapes[-1]:
                 # Manipulate shape of core_state spec,
                 # so sequences contain only the first core_state of a sequence.
                 shapes[-1].update(core_state=tree.map_structure(
@@ -261,18 +244,13 @@ def make_reverb_rnn_sequence_fifo_sampler_dataset(
                 dtypes=dtypes,
                 shapes=shapes,
                 max_in_flight_samples_per_worker=max_in_flight_samples_per_worker,
-                num_workers_per_iterator=1,
-                sequence_length=None,
-                emit_timesteps=True)
+                num_workers_per_iterator=1)
         else:
             dataset_ = reverb.TrajectoryDataset.from_table_signature(
                 server_address=server_address,
                 table=table,
                 max_in_flight_samples_per_worker=max_in_flight_samples_per_worker,
-                num_workers_per_iterator=1,
-                # ensures compatability with agents using a queue
-                sequence_length=None,
-                emit_timesteps=True)
+                num_workers_per_iterator=1)
         # Finish the pipeline: batch and prefetch.
         if batch_size:
             dataset_ = dataset_.batch(batch_size, drop_remainder=True)
