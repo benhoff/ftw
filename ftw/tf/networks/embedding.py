@@ -76,6 +76,7 @@ class OAREmbedding(snt.Module):
             self._internal_rewards_variables = internal_rewards.variable
         self._torso = torso
 
+    @tf.function
     def __call__(self, inputs: observation_action_reward.OAR) -> tf.Tensor:
         """Embed each of the (observation, action, reward) inputs & concatenate.
 
@@ -91,31 +92,18 @@ class OAREmbedding(snt.Module):
             inputs = inputs._replace(reward=tf.expand_dims(inputs.reward, axis=-1))
 
         features = self._torso(inputs.observation)  # [T?, B, D]
-        if isinstance(self._num_actions, int):
-            action = tf.one_hot(inputs.action, depth=self._num_actions)  # [T?, B, A]
-        else:  # decomposed action space
-            # create one-hot arrays per action group and concatenate the results to a tf.Tensor
-            """
-            action = tf.concat(
-                [tf.one_hot(action, depth=self._num_actions[i]) for i, action in enumerate(inputs.action)],
-                axis=-1)
-            """
-            action = tf.concat(
-                    [tf.one_hot((0,), depth=7), # steer
-                     tf.one_hot((1,), depth=5), # accel
-                     tf.one_hot((2,), depth=2), # brake
-                     tf.one_hot((3,), depth=2), # nitro
-                     tf.one_hot((4,), depth=2), # rescue
-                     tf.one_hot((5,), depth=2)], axis=-1) # skid
+        # action = tf.one_hot(inputs.action, depth=20)
+        n_features = inputs.action.get_shape()[-1]
+        action = tf.concat([tf.one_hot(inputs.action[:, col], self._num_actions[col]) for col in range(n_features)], axis=-1)
 
         reward = inputs.reward
         if self._internal_rewards is not None:
             # If using internal_rewards, reward is dot product between internal_rewards and rewards/events
             reward = self._internal_rewards.reward(events=reward)
         reward = tf.nn.tanh(reward)  # [T?, B, 1]
-        # FIXME: This might not make sense
-        reward = tf.expand_dims(reward, axis=0)
+        reward = tf.expand_dims(reward, axis=1)
 
+        # features is size [3200,256], action is size [3200, 20], reward is size [3200]
         embedding = tf.concat([features, action, reward], axis=-1)  # [T?, B, D+A+1]
 
         return embedding
