@@ -16,7 +16,7 @@
 """For The Win (FWT) agent implementation."""
 
 from typing import Mapping, List, Union, Tuple,Optional, Sequence
-from ftw.types import Initializer
+# from ftw.types import Initializer
 
 import acme
 from acme import specs
@@ -65,8 +65,8 @@ class FTWWithoutActor:
             tanh_mean: bool = False,
             fixed_scale: bool = False,
             use_tfd_independent: bool = False,
-            variational_unit_w_init: Optional[Initializer] = None,
-            variational_unit_b_init: Optional[Initializer] = None,
+            variational_unit_w_init= None,
+            variational_unit_b_init= None,
             strict_period_order: bool = True,
             dnc_memory_size: int = 450,
             dnc_word_size: int = 32,
@@ -317,8 +317,8 @@ class FTW(acme.Actor, FTWWithoutActor):
             tanh_mean: bool = False,
             fixed_scale: bool = False,
             use_tfd_independent: bool = False,
-            variational_unit_w_init: Optional[Initializer] = None,
-            variational_unit_b_init: Optional[Initializer] = None,
+            variational_unit_w_init= None,
+            variational_unit_b_init= None,
             strict_period_order: bool = True,
             dnc_memory_size: int = 450,
             dnc_word_size: int = 32,

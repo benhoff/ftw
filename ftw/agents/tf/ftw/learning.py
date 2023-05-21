@@ -18,7 +18,7 @@
 import time
 from typing import Dict, List, Mapping, Optional
 import types
-from ftw.types import FloatValueOrTFVariable, IntValueOrTFVariable
+# from ftw.types import FloatValueOrTFVariable, IntValueOrTFVariable
 
 import acme
 from acme.tf import savers as tf2_savers
@@ -46,8 +46,8 @@ class FtwLearner(acme.Learner, tf2_savers.TFSaveable):
             self,
             policy_network: snt.RNNCore,
             dataset: tf.data.Dataset,
-            learning_rate: FloatValueOrTFVariable,
-            slow_core_period: IntValueOrTFVariable,
+            learning_rate,
+            slow_core_period,
             internal_rewards: internal_reward.InternalRewards,
             # Arguments for auxiliary tasks:
             pixel_control_network: Optional[snt.RNNCore] = None,
@@ -56,14 +56,14 @@ class FtwLearner(acme.Learner, tf2_savers.TFSaveable):
             nonzero_reward_prediction_dataset: Optional[tf.data.Dataset] = None,
             zero_reward_prediction_dataset: Optional[tf.data.Dataset] = None,
             # Arguments for Hyperparameters:
-            entropy_cost: FloatValueOrTFVariable = 0.,
-            kld_prior_fixed_cost: FloatValueOrTFVariable = 1e-4,
-            kld_prior_posterior_cost: FloatValueOrTFVariable = 1e-3,
-            pixel_control_cost: FloatValueOrTFVariable = 0.01,
-            reward_prediction_cost: FloatValueOrTFVariable = 0.1,
+            entropy_cost= 0.,
+            kld_prior_fixed_cost= 1e-4,
+            kld_prior_posterior_cost= 1e-3,
+            pixel_control_cost= 0.01,
+            reward_prediction_cost= 0.1,
             # Arguments for fixed Hyperparameters:
             baseline_cost: float = 0.5,
-            discount: FloatValueOrTFVariable = 0.99,
+            discount= 0.99,
             max_abs_reward: Optional[float] = None,
             max_gradient_norm: Optional[float] = None,
             rms_prop_epsilon: float = 0.01,
@@ -212,7 +212,7 @@ class FtwLearner(acme.Learner, tf2_savers.TFSaveable):
     def set_step(self, step):
         self._step_counter.assign(step)
 
-    def set_weights(self, weights: Mapping[str, List[tf.Variable]]):
+    def set_weights(self, weights):
         old_weights = self.get_weights()
         for key in weights:
             try:

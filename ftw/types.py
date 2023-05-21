@@ -9,8 +9,8 @@ tfd = tfp.distributions
 snt_init = snt.initializers
 Initializer = Optional[Union[snt_init.Initializer, tf.initializers.Initializer]]
 
-FloatValue = Union[float, np.float]
-IntValue = Union[int, np.int]
+FloatValue = Union[float, float]
+IntValue = Union[int, int]
 
 FloatValueOrTFVariable = Union[float, tf.Variable]
 IntValueOrTFVariable = Union[float, tf.Variable]

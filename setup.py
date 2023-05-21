@@ -10,11 +10,11 @@ from setuptools import find_packages
 from setuptools import setup
 
 reverb_requirements = [
-    'dm-reverb',
+    'dm-reverb[tensorflow]==0.7.0',
 ]
 
 tf_requirements = [
-    'tensorflow',
+    'tensorflow==2.8.0',
     #'tensorflow-probability',
     'dm-sonnet',
     'trfl',
@@ -66,10 +66,9 @@ setup(
         'absl-py',
         'dm_env',
         'dm-tree',
-        # 'numpy<1.19.0, >=1.16.0',
         'numpy',
         'pillow',
-        'dm-acme',
+        'dm-acme[tf]',
     ] + reverb_requirements + tf_requirements + jax_requirements + env_requirements,
     classifiers=[
         'Development Status :: 3 - Alpha',
